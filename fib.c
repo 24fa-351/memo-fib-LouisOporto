@@ -4,27 +4,18 @@
 //Used as memory to store computed fib()
 unsigned long long* memo;
 
-unsigned long long fibRecursive(unsigned long long num);
+unsigned long long fibRecursive(int num);
 unsigned long long fibRecursiveWrapper(int num);
 
-unsigned long long fibIterative(unsigned long long num);
+unsigned long long fibIterative(int num);
 unsigned long long fibIterativeWrapper(int num);
 
 int main(int argc, char* argv[]) {
     // Set argument as variables
-    int integer = atoi(argv[1]);
+    int N = atoi(argv[1]);
     char type = argv[2][0];
-    char* filename = argv[3];
 
-
-    FILE *fileTxt = fopen(filename, "r");
-    char content[100];
-    fgets(content, 100, fileTxt);
-
-    int number2 = atoi(content);
-    int N = number2 + integer;
-
-    // Resolve the -1 indexing by substracting value
+    // Resolve the -1 indexing by subtracting value
     if(type == 'r') {
         printf("%llu\n", fibRecursiveWrapper(N - 1)); // Recursive call
     }
@@ -34,7 +25,7 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-unsigned long long fibRecursive(unsigned long long num) {
+unsigned long long fibRecursive(int num) {
     if(num <= 1) return num;
 
     // Check if result is already computed
@@ -61,12 +52,12 @@ unsigned long long fibRecursiveWrapper(int num) {
     return result;
 }
 
-unsigned long long fibIterative(unsigned long long num) {
+unsigned long long fibIterative(int num) {
     unsigned long long prevPrevNumber;
     unsigned long long prevNumber;
     memo[0] = 0, memo[1] = 1;
 
-    for(unsigned long long iter = 2; iter <= num; iter++) {
+    for(int iter = 2; iter <= num; iter++) {
         prevPrevNumber = memo[iter - 2];
         prevNumber = memo[iter - 1];
         memo[iter] = prevNumber + prevPrevNumber;
