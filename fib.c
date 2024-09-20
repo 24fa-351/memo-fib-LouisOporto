@@ -2,13 +2,16 @@
 #include <stdlib.h>
 
 //Used as memory to store computed fib()
-unsigned long long* memo;
+typedef unsigned long long (*fibFunc)(int);
+unsigned long long memoNew[100]; // Limit to hundred since unsigned long long limits to 94
+fibFunc ptr;
 
+void initCache(fibFunc chosenFunc);
+unsigned long long fibWrapper(int num);
+
+// Unmodified fib() methods
 unsigned long long fibRecursive(int num);
-unsigned long long fibRecursiveWrapper(int num);
-
 unsigned long long fibIterative(int num);
-unsigned long long fibIterativeWrapper(int num);
 
 int main(int argc, char* argv[]) {
     // Set argument as variables
@@ -17,64 +20,49 @@ int main(int argc, char* argv[]) {
 
     // Resolve the -1 indexing by subtracting value
     if(type == 'r') {
-        printf("%llu\n", fibRecursiveWrapper(N - 1)); // Recursive call
+        initCache(fibRecursive);
+        printf("%llu\n", fibWrapper(N - 1)); // Recursive call
     }
     else if(type == 'i') {
-        printf("%llu\n", fibIterativeWrapper(N - 1)); // Iterative call
+        initCache(fibIterative);
+        printf("%llu\n", fibWrapper(N - 1)); // Iterative call
     }
+
     return 0;
+}
+
+// New fib wrappers
+void initCache(fibFunc chosenFunc) {
+    ptr = chosenFunc;
+    memoNew[2] = 1;
+}
+
+unsigned long long fibWrapper(int num) {
+    //base case
+    if(memoNew[num] != 0) return memoNew[num];
+
+    // recusrive case
+    memoNew[num] = ptr(num);
+
+    return memoNew[num];
 }
 
 unsigned long long fibRecursive(int num) {
     if(num <= 1) return num;
-
-    // Check if result is already computed
-    if(memo[num] != 0) return memo[num];
-
-    // Compute fib value and store in memo
-    memo[num] = fibRecursive(num - 1) + fibRecursive(num - 2);
-
-    return memo[num];
-}
-
-unsigned long long fibRecursiveWrapper(int num) {
-    // Allocate memory for memoization
-    memo = (unsigned long long*)malloc((num + 1) * sizeof(unsigned long long));
-
-    for(int i = 0; i <= num; i++) {
-        memo[i] = 0;
-    }
-
-    unsigned long long result = fibRecursive(num);
-
-    free(memo);
-
-    return result;
+    return fibWrapper(num - 1) + fibWrapper(num - 2);
 }
 
 unsigned long long fibIterative(int num) {
-    unsigned long long prevPrevNumber;
-    unsigned long long prevNumber;
-    memo[0] = 0, memo[1] = 1;
+    unsigned long long prevNumber = 1;
+    unsigned long long prevPrevNumber = 0;
+    // base case 0 and 1
+    if(num <= 1) return num;
 
-    for(int iter = 2; iter <= num; iter++) {
-        prevPrevNumber = memo[iter - 2];
-        prevNumber = memo[iter - 1];
-        memo[iter] = prevNumber + prevPrevNumber;
-    }
-    return memo[num];
-}
-
-unsigned long long fibIterativeWrapper(int num) {
-    memo = (unsigned long long*)malloc((num + 1) * sizeof(unsigned long long));
-
-    for(int i = 0; i <= num; i++) {
-        memo[i] = 0;
+    for(int i = 2; i <= num; i++) {
+        memoNew[i] = prevNumber + prevPrevNumber;
+        prevPrevNumber = prevNumber;
+        prevNumber = memoNew[i];
     }
 
-    unsigned long long result = fibIterative(num);
-
-    free(memo);
-
-    return result;
+    return memoNew[num];
 }
