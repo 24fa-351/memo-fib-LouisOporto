@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 //Used as memory to store computed fib()
+//Props and credit to Noah for the help 
 typedef unsigned long long (*fibFunc)(int);
 unsigned long long memoNew[100]; // Limit to hundred since unsigned long long limits to 94
 fibFunc ptr;
@@ -55,14 +56,15 @@ unsigned long long fibRecursive(int num) {
 unsigned long long fibIterative(int num) {
     unsigned long long prevNumber = 1;
     unsigned long long prevPrevNumber = 0;
+    unsigned long long summation;
     // base case 0 and 1
     if(num <= 1) return num;
 
     for(int i = 2; i <= num; i++) {
-        memoNew[i] = prevNumber + prevPrevNumber;
+        summation = prevNumber + prevPrevNumber;
         prevPrevNumber = prevNumber;
-        prevNumber = memoNew[i];
+        prevNumber = summation;
     }
 
-    return memoNew[num];
+    return summation;
 }
